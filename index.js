@@ -30,7 +30,15 @@ const app = express();
 
 const port = process.env.PORT || 5000;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://your-frontend-name.vercel.app",
+    ],
+    credentials: true,
+  }),
+);
 
 app.use(express.json());
 
@@ -57,8 +65,6 @@ async function run() {
     app.use("/users", userRoutes);
 
     app.use("/patients", patientRoutes);
-
-    app.use("/uploads", express.static("uploads"));
 
     app.use("/prescriptions", prescriptionRoutes);
 

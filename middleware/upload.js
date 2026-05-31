@@ -1,32 +1,18 @@
 const multer = require("multer");
-const fs = require("fs");
-const path = require("path");
 
-/*
-|--------------------------------------------------------------------------
-| CREATE UPLOADS FOLDER IF NOT EXISTS
-|--------------------------------------------------------------------------
-*/
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const uploadPath = path.join(__dirname, "../uploads");
+const cloudinary = require("../config/cloudinary");
 
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+const storage = new CloudinaryStorage({
+  cloudinary,
 
-/*
-|--------------------------------------------------------------------------
-| STORAGE
-|--------------------------------------------------------------------------
-*/
+  params: {
+    folder: "carex-reports",
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
+    resource_type: "auto",
 
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    allowed_formats: ["pdf", "png", "jpg", "jpeg"],
   },
 });
 

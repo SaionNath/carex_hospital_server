@@ -195,13 +195,13 @@ router.patch(
         });
       }
 
-      const filePath = `/uploads/${req.file.filename}`;
+      const fileUrl = req.file.path;
 
       const result = await patientsCollection.updateOne(
         { _id: new ObjectId(id) },
         {
           $set: {
-            reportFile: filePath,
+            reportFile: fileUrl,
             status: "Report Ready",
           },
         },
