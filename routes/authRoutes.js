@@ -8,6 +8,10 @@ router.get("/", (req, res) => {
   res.send("Auth route is working");
 });
 
+router.get("/test", (req, res) => {
+  res.send("Auth test route working");
+});
+
 router.post("/login", loginUser);
 
 module.exports = router;
