@@ -1,8 +1,10 @@
 const express = require("express");
+const streamifier = require("streamifier");
 
 const router = express.Router();
 
 const client = require("../config/db");
+const cloudinary = require("../config/cloudinary");
 const upload = require("../middleware/upload");
 
 const { ObjectId } = require("mongodb");
@@ -195,20 +197,35 @@ router.patch(
         });
       }
 
-      const fileUrl = req.file.path;
+      const uploadResult = await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "carex-reports",
+            resource_type: "auto",
+          },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result);
+          },
+        );
+
+        streamifier.createReadStream(req.file.buffer).pipe(stream);
+      });
 
       const result = await patientsCollection.updateOne(
         { _id: new ObjectId(id) },
         {
           $set: {
-            reportFile: fileUrl,
+            reportFile: uploadResult.secure_url,
             status: "Report Ready",
           },
         },
       );
 
       res.send(result);
-    } catch {
+    } catch (error) {
+      console.log(error);
+
       res.status(500).send({
         message: "Failed To Upload Report",
       });
