@@ -30,7 +30,7 @@ const port = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://your-frontend-name.vercel.app"],
+    origin: ["http://localhost:5173", "https://carex-hospital-client.vercel.app"],
     credentials: true,
   }),
 );
@@ -86,13 +86,6 @@ run();
 
 app.get("/", (req, res) => {
   res.send("CareX Hospital Server Running");
-});
-
-app.get("/env-test", (req, res) => {
-  res.send({
-    MONGODB_URI: process.env.MONGODB_URI ? "FOUND" : "MISSING",
-    JWT_SECRET: process.env.JWT_SECRET ? "FOUND" : "MISSING",
-  });
 });
 
 app.listen(port, () => {
