@@ -88,6 +88,13 @@ app.get("/", (req, res) => {
   res.send("CareX Hospital Server Running");
 });
 
+app.get("/env-test", (req, res) => {
+  res.send({
+    MONGODB_URI: process.env.MONGODB_URI ? "FOUND" : "MISSING",
+    JWT_SECRET: process.env.JWT_SECRET ? "FOUND" : "MISSING",
+  });
+});
+
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
