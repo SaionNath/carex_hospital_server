@@ -201,7 +201,7 @@ router.patch(
         const stream = cloudinary.uploader.upload_stream(
           {
             folder: "carex-reports",
-            resource_type: "auto",
+            resource_type: "raw",
           },
           (error, result) => {
             if (error) reject(error);
