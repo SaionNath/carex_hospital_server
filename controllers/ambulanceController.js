@@ -59,6 +59,11 @@ const getBookings = async (req, res) => {
               driverId,
               bookingStatus: "Accepted",
             },
+
+            {
+              driverId,
+              bookingStatus: "Completed",
+            },
           ],
         })
         .toArray();
