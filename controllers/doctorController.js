@@ -71,9 +71,7 @@ const getDoctorDashboardStats = async (req, res) => {
 
     const recommendedForDischarge = await patientsCollection.countDocuments({
       assignedDoctorId: doctorId,
-      status: {
-        $in: ["Recommended For Discharge", "Discharged"],
-      },
+      status: "Recommended For Discharge",
     });
 
     const dischargedPatients = await patientsCollection.countDocuments({
