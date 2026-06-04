@@ -7,15 +7,27 @@ const bookAmbulance = async (req, res) => {
 
   const bookingData = req.body;
 
+  const distanceInKm = Number(bookingData.distanceInKm || 0);
+
+  const baseFare = 200;
+  const perKm = distanceInKm * 30;
+  const extraBlocks = Math.floor(distanceInKm / 5) * 200;
+
+  const estimatedBill = baseFare + perKm + extraBlocks;
+
   const newBooking = {
     ...bookingData,
 
+    estimatedBill,
+
     bookingStatus: "Pending",
+
     driverName: "",
     driverPhone: "",
     driverId: "",
-    distanceInKm: 0,
+
     totalBill: 0,
+
     acceptedAt: null,
     completedAt: null,
   };
@@ -26,13 +38,40 @@ const bookAmbulance = async (req, res) => {
 };
 
 const getBookings = async (req, res) => {
-  const db = req.app.locals.db;
+  try {
+    const db = req.app.locals.db;
 
-  const ambulanceCollection = db.collection("ambulanceBookings");
+    const ambulanceCollection = db.collection("ambulanceBookings");
 
-  const bookings = await ambulanceCollection.find().toArray();
+    const { driverId } = req.query;
 
-  res.send(bookings);
+    let bookings = [];
+
+    if (driverId) {
+      bookings = await ambulanceCollection
+        .find({
+          $or: [
+            {
+              bookingStatus: "Pending",
+            },
+
+            {
+              driverId,
+              bookingStatus: "Accepted",
+            },
+          ],
+        })
+        .toArray();
+    } else {
+      bookings = await ambulanceCollection.find().toArray();
+    }
+
+    res.send(bookings);
+  } catch {
+    res.status(500).send({
+      message: "Failed To Load Bookings",
+    });
+  }
 };
 
 const updateBookingStatus = async (req, res) => {
@@ -124,7 +163,7 @@ const acceptBooking = async (req, res) => {
 
     const km = Number(distanceInKm);
 
-    // 💰 BILL LOGIC
+    // BILL LOGIC
     const baseFare = 200;
     const perKm = km * 30;
     const extraBlocks = Math.floor(km / 5) * 200;
@@ -141,7 +180,7 @@ const acceptBooking = async (req, res) => {
           driverPhone,
           distanceInKm: km,
           totalBill,
-          acceptedAt: new Date(), // ⬅ important
+          acceptedAt: new Date(),
         },
       },
     );
